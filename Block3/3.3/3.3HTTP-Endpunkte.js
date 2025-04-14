@@ -44,6 +44,28 @@ app.get('/html', (req, res) => {
     res.send(html);
 });
 
+app.get('/user-agent', (req, res) => {
+    const userAgent = req.get('User-Agent');
+    res.json({ 'user-agent': userAgent });
+});
+
+app.get('/secret', (req, res) => {
+    res.status(403).send('Forbidden');
+});
+
+app.get('/xml', (req, res) => {
+    const xml = `
+    <?xml version="1.0" encoding="UTF-8"?>
+    <note>
+        <to>Tove</to>
+        <from>Jani</from>
+        <heading>Reminder</heading>
+        <body>Don't forget me this weekend!</body>
+    </note>`;
+    res.type('application/xml');
+    res.send(xml);
+});
+
 
 app.listen(port, () => {
     console.log(`Server läuft unter http://localhost:${port}`);
