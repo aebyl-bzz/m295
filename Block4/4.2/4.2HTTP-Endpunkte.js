@@ -7,12 +7,12 @@ const moment = require('moment-timezone');
 
 const names = ['Alice', 'Bob', 'Charlie'];
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 
 app.get('/now', (request, response) => {
     const tz = request.query.tz || 'Europe/Zurich';
     const time = moment().tz(tz).format();
-    response.json({ currentTime: time });
+    response.json({currentTime: time});
 });
 
 app.get('/zli', (request, response) => {
@@ -81,9 +81,9 @@ app.get('/secret', (request, response) => {
 app.get('/secret2', (request, response) => {
     const auth = request.get('Authorization');
     if (auth === 'Basic aGFja2VyOjEyMzQ=') {
-        return response.status(200).send(' Zugriff gewährt');
+        return response.status(200).send('🔓 Zugriff gewährt');
     }
-    response.status(401).send(' Zugriff verweigert');
+    response.status(401).send('🚫 Zugriff verweigert');
 });
 
 app.get('/xml', (request, response) => {
@@ -101,7 +101,23 @@ app.get('/me', (request, response) => {
     response.json(person);
 });
 
-app.get('/chuck', (request, response) => {
+app.get('/chuck', async (request, response) => {
+    try {
+        const name = request.query.name || 'Chuck';
+        const reponse = await fetch('https://api.chucknorris.io/jokes/random');
+        const data = await reponse.json();
+        const joke = data.value.replace(/Chuck Norris/g, name);
+
+        response.send(joke);
+
+    } catch (err) {
+        console.log(err)
+    }
+});
+
+app.patch('/me', (request, response) => {
+    const updates = request.body;
+    Object.assign(me, updates);
 
 });
 
