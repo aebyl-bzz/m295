@@ -4,8 +4,6 @@ const port = 3001;
 const booksController = require('./booksController')
 
 
-
-
 app.use(express.json())
 
 app.get("/books", booksController.getBooks)
@@ -89,14 +87,27 @@ function isLendable(lend) {
 
 let email = "lucius.aeby@icloud.com"
 let pw = "1234"
+let isLoggedIn = false;
 
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
     if (username === email && password === pw) {
         res.status(200).send('Login successful');
+        isLoggedIn = true;
     } else {
         res.status(401).send('Unauthorized: Invalid credentials');
     }
 });
 
-app.listen(3001)
+app.get('/verify', (req, res) => {
+    if(isLoggedIn) {res.status(200).send(email);
+    } else {
+        res.status(401).send('You are not logged in.');
+    }
+});
+
+
+
+app.listen(3001, () => {
+    console.log(`Server läuft auf http://localhost:${port}`);
+});
