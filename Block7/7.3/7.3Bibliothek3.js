@@ -1,5 +1,6 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
+const port = 3001;
 const booksController = require('./booksController')
 
 
@@ -86,4 +87,16 @@ function isLendable(lend) {
     return customerLends <= 3 && bookLends < 1
 }
 
-app.listen(3000)
+let email = "lucius.aeby@icloud.com"
+let pw = "1234"
+
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+    if (username === email && password === pw) {
+        res.status(200).send('Login successful');
+    } else {
+        res.status(401).send('Unauthorized: Invalid credentials');
+    }
+});
+
+app.listen(3001)
