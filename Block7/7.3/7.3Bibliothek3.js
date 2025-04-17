@@ -4,6 +4,8 @@ const port = 3001;
 const booksController = require('./booksController')
 
 
+
+
 app.use(express.json())
 
 app.get("/books", booksController.getBooks)
@@ -106,7 +108,12 @@ app.get('/verify', (req, res) => {
     }
 });
 
-
+app.delete('/logout', (req, res) => {
+    if(isLoggedIn) {
+        isLoggedIn = false;
+        res.status(204).send('Logged out');
+    }
+});
 
 app.listen(3001, () => {
     console.log(`Server läuft auf http://localhost:${port}`);
