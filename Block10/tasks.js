@@ -1,7 +1,14 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+const {verify} = require("jsonwebtoken");
+
 app.use(express.json());
+app.use(cookieParser());
+
+const SECRET = 'geheimesPasswort123';
 
 let tasks = [
     {
@@ -20,6 +27,22 @@ let tasks = [
         description: "Description 3"
     }
 ]
+
+const email = 'admin';
+const pw = 'm295';
+isLoggedIn = false;
+
+function verifyToken(req, res, next) {
+    const token = req.cookies.auth_token;
+
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+}
 
 app.get('/tasks', (req, res) => {
     res.status(200).json(tasks);
@@ -68,6 +91,27 @@ app.delete('/tasks/:id', (req, res) => {
     }
 });
 
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    if (username === email && password === pw) {
+        isLoggedIn = true;
+        const token = jwt.sign({ username }, SECRET, { expiresIn: '1h' });
+        res.cookie('auth_token', token, { httpOnly: true });
+        res.status(200).json({message:'Login successful', token});
+    } else {
+        res.status(401).send('Unauthorized: Invalid credentials');
+    }
+});
+app.get('/verify', verifyToken, (req, res) => {
+    const user = req.user;
+    console.log(user)
+    res.status(200).json({ message: 'Cookie', user })
+});
+app.delete('/logout', verifyToken, (req, res) => {
+    res.clearCookie('token');
+    res.json({message: 'Logout sucessfully'})
+    isLoggedIn = false;
+});
 
 app.listen(port, () => {
     console.log(`Server läuft auf http://localhost:${port}`);
